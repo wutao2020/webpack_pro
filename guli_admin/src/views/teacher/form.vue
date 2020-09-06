@@ -33,6 +33,7 @@
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
+          :on-error="handleAvatarError"
           class="avatar-uploader"
           action="http://localhost:8120/admin/oss/file/upload?module=avatar">
           <img v-if="teacher.avatar" :src="teacher.avatar" class="avatar">
@@ -127,6 +128,10 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!')
       }
       return isJPG && isLt2M
+    },
+    handleAvatarError() {
+      // console.log(error)
+      this.$message.error('上传失败')
     }
   }
 }

@@ -3,7 +3,15 @@
     <!--查询表单-->
     <el-form :inline="true">
       <el-form-item>
-        <el-input v-model="searchObj.name" placeholder="讲师"/>
+        <!--<el-input v-model="searchObj.name" placeholder="讲师"/>-->
+        <el-autocomplete
+          v-model="searchObj.name"
+          :fetch-suggestions="querySearch"
+          :trigger-on-focus="false"
+          class="inline-input"
+          placeholder="讲师名称"
+          value-key="name"
+        />
       </el-form-item>
 
       <el-form-item>
@@ -30,7 +38,14 @@
         <el-button type="default" @click="resetData()">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="list" border stripe>
+    <!-- 工具按钮 -->
+    <div style="margin-bottom: 10px">
+      <el-button type="danger" size="mini" @click="batchRemove()">批量删除</el-button>
+    </div>
+    <el-table :data="list" border stripe @selection-change="handleSelectionChange">
+      <el-table-column
+        type="selection"
+        width="55"/>
       <el-table-column
         label="序号"
         width="50">
@@ -80,7 +95,8 @@ export default {
       total: 0, // 总记录数
       page: 1, // 页码
       limit: 3, // 每页记录数
-      searchObj: {}// 查询条件
+      searchObj: {}, // 查询条件
+      multipleSelection: []// 批量删除选中的记录列表
     }
   },
   created() {
@@ -109,6 +125,45 @@ export default {
       this.limit = 3
       this.page = 1
       this.fetchData()
+    },
+    // 批量删除
+    batchRemove() {
+      if (this.multipleSelection.length === 0) {
+        this.$message.warning('请选择要删除的记录！')
+        return
+      }
+      this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 点击确定，远程调用ajax
+        // 遍历selection，将id取出放入id列表
+        var idList = []
+        this.multipleSelection.forEach(item => {
+          idList.push(item.id)
+        })
+        // 调用api
+        return teacherApi.batchRemove(idList)
+      }).then((response) => {
+        this.fetchData()
+        this.$message.success(response.message)
+      }).catch(error => {
+        if (error === 'cancel') {
+          this.$message.info('取消删除')
+        }
+      })
+    },
+    // 当多选选项发生变化的时候调用
+    handleSelectionChange(selection) {
+      console.log(selection)
+      this.multipleSelection = selection
+    },
+
+    querySearch(queryString, callback) {
+      teacherApi.selectNameListByKey(queryString).then(response => {
+        callback(response.data.nameList)
+      })
     },
     handleDelete(id) {
       this.$confirm('此操作是将讲师删除, 是否继续?', '提示', {

@@ -22,6 +22,14 @@ export default{
       method: 'delete'
     })
   },
+  // 批量删除
+  batchRemove(ids) {
+    return request({
+      url: '/admin/edu/teacher/batch-remove',
+      method: 'delete',
+      data: ids
+    })
+  },
   save(teacher) {
     return request({
       url: '/admin/edu/teacher/save',
@@ -41,6 +49,12 @@ export default{
       url: '/admin/edu/teacher/update',
       method: 'put',
       data: teacher
+    })
+  },
+  selectNameListByKey(key) {
+    return request({
+      url: `/admin/edu/teacher/list/name/${key}`,
+      method: 'get'
     })
   }
 }
