@@ -3,7 +3,7 @@ import request from '@/utils/request'
 export default{
   list() {
     return request({
-      url: '/admin/edu/teacher/getAll',
+      url: '/admin/edu/teacher/list',
       method: 'get'
     })
   },
