@@ -29,6 +29,18 @@ export default {
       active: 0,
       courseId: null
     }
+  },
+  created() {
+    // 获取路由id
+    if (this.$route.name === 'CourseInfoEdit') {
+      this.courseId = this.$route.params.id
+      this.active = 0
+    }
+
+    if (this.$route.name === 'CourseChapterEdit') {
+      this.courseId = this.$route.params.id
+      this.active = 1
+    }
   }
 }
 </script>
